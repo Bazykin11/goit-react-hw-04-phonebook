@@ -1,77 +1,76 @@
 import { nanoid } from "nanoid";
-import React, {Component} from "react";
 import styled from '@emotion/styled'
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-class Phonebook extends Component {
-    static propTypes = {
-      onSubmit: PropTypes.func.isRequired,
-    };
+export default function Phonebook ({ onSubmit }) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-    state = {
-        name: '',
-        number: ''
-        }
+  const handelInputChangeName = event => {
+    setName(event.currentTarget.value);
+  };
 
-    handelInputChange = event => {
-          this.setState({
-            [event.currentTarget.name]: event.currentTarget.value})
-        };
+  const handelInputChangeNumber = event => {
+    setNumber(event.currentTarget.value);
+  };
 
-    
-    handelSubmit = event =>{
-        event.preventDefault();
+  const handelSubmit = event => {
+    event.preventDefault();
+    onSubmit(name, number);
+    reset();
+  };
+  const reset = () => {
+    setName('');
+    setNumber('');
+  };
 
-        this.props.onSubmit(this.state);
+  const idName = nanoid();
+  const idNumber = nanoid();
 
-        this.reset();
-        }
+  return (
+    <div>
+      <Form onSubmit={handelSubmit}>
+        <Label htmlFor={idName}>
+          Name
+          <Input
+            type="text"
+            value={name}
+            onChange={handelInputChangeName}
+            name="name"
+            id={idName}
+            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+            required
+          />
+        </Label>
 
-    reset = () => {
-      this.setState({name:'', number:''});
-    };
+        <Label htmlFor={idNumber}>
+          Number
+          <Input
+            type="tel"
+            name="number"
+            value={number}
+            id={idNumber}
+            onChange={handelInputChangeNumber}
+            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+            required
+          />
+        </Label>
+        <button type="submit" style={{ marginTop: '10px' }}>
+          Add contact
+        </button>
+      </Form>
+    </div>
+  );
+};
 
-    id = nanoid();  
 
-    render () {
-        return (
-          <div>
-            <Form onSubmit={this.handelSubmit}>
-              <Label htmlFor={this.id}>
-                  Name
-                <Input
-                  type="text"
-                  value={this.state.name}
-                  onChange={this.handelInputChange}
-                  name="name"
-                  id = {this.id}
-                  pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-                  title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-                  required
-                />
-              </Label>
-
-              <Label htmlFor={this.id}>
-                  Number
-                <Input
-                    type="tel"
-                    name="number"
-                    value={this.state.number}
-                    id = {this.id}
-                    onChange={this.handelInputChange}
-                    pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-                    title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-                    required
-                  />
-              </Label>
-              <button type="submit" style={{marginTop: "10px"}}>Add contact</button>
-            </Form>
-          </div>
-          );
-        };
+Phonebook.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
 }
 
-export default Phonebook
 
 
 /////////////////////////////// STYLE /////////////////////////

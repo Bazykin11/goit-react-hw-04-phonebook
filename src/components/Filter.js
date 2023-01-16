@@ -1,31 +1,33 @@
-import React from "react";
-import styled from '@emotion/styled'
+import React from 'react';
+import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 
+export const Filter = ({ onChange }) => {
+  const filter = e => {
+    const contactName = e.target.value.toLowerCase();
+    onChange(contactName);
+  };
 
-const Filter = ({value, onChange}) => (
-  <Label>
+  return (
+    <Label>
       Find contacts by name
-      <Input type="text" value={value} onChange={onChange}/>
-  </Label>
-);
+      <Input type="text" onChange={filter} />
+    </Label>
+  );
+}
 
 export default Filter;
-
 
 Filter.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-
-
-
 /////////////////////////////// STYLE /////////////////////////
 
 const Label = styled.label`
   display: block;
-  margin-bottom: 0.25rem; 
-`
+  margin-bottom: 0.25rem;
+`;
 
 const Input = styled.input`
   display: block;
@@ -39,6 +41,4 @@ const Input = styled.input`
   border: 1px solid #bdbdbd;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-`
-
-
+`;

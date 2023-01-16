@@ -1,99 +1,84 @@
-import styled from '@emotion/styled'
-import React from "react";
-import Phonebook from "./Phonebook";
-import { nanoid } from 'nanoid'
-import { ContactList } from "./ContactList";
-import Filter from "./Filter";
+import styled from '@emotion/styled';
+import Phonebook from './Phonebook';
+import { nanoid } from 'nanoid';
+import { ContactList } from './ContactList';
+import Filter from './Filter';
+import toast, { Toaster } from 'react-hot-toast';
+import { useState, useEffect } from 'react';
 
-export class App extends React.Component {
 
-    state = {
-      contacts: [],
-      filter: ''
+
+export const App = () => {
+  const [contacts, setContacts] = useState(() => {
+    const savedContacts = JSON.parse(localStorage.getItem('contacts'));
+    if (savedContacts === null) {
+      return [];
     }
+    return savedContacts;
+  });
+  const [filter, setFilter] = useState('');
 
-    componentDidMount = () => {
-      const saveContacts = localStorage.getItem('contacts');
-      if (saveContacts !== null){
-        this.setState({
-          contacts: JSON.parse(saveContacts)
-        })
-      }
+  useEffect(() => {
+    if (contacts === []) {
+      return;
     }
-    
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-    componentDidUpdate = (_, prevState) => {
-      if (prevState.contacts !== this.state.contacts){
-        localStorage.setItem(`contacts`, JSON.stringify(this.state.contacts))
-        
-      }
+  const addContact = ( name, number) => {
+    const checkedContact = contactCheck(name);
+    if (checkedContact !== undefined) {
+      return toast.error(`${name} is already in the contact list`);
     }
-    
+    setContacts(prevContacts => [...prevContacts, { id: nanoid(), name, number }]);
+    toast.success('You have added a new contact');
+  };
 
+  const filteredContacts = () => {
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter)
+    );
+  };
+  const deleteContact = contactId => {
+    setContacts(prevContacts =>
+      prevContacts.filter(contact => contact.id !== contactId)
+    );
+    toast.error('You have deleted a contact');
+  };
 
-    formSubmitHandler = data => {
-      const addContact = {
-        id: nanoid(2),
-        ...data
-      }
-
-      const isFindCopyContact = this.state.contacts.find(
-        element => element.name.toLocaleLowerCase() === data.name.toLocaleLowerCase()
-      );
-      if (isFindCopyContact){
-        return alert(`${data.name} is already in your contact`)
-      };
-
-      this.setState(prevState => (
-        {
-          contacts: [addContact, ...prevState.contacts],
-        }
-      ))
-    }
-
-    changeFilter = (e) => {
-      this.setState({filter: e.currentTarget.value});
-    }
-
-    getVisibleFilter = () => {
-      const {filter , contacts} = this.state;
-      const normalizeFilter = filter.toLowerCase();
-      return contacts.filter(contact => contact.name.toLowerCase().includes(normalizeFilter),
-      );
-    }
-
-    deleteContact = (contactId) => {
-      this.setState(prevState => ({
-        contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-      }))
-    }
-
- 
-
-
-  render () {
-    const {filter} = this.state;
-
-    const visibleFilter = this.getVisibleFilter();
-    return (
-              <Container>
-                <Phonebook 
-                    onSubmit = {this.formSubmitHandler}/>
-                <h2>Contacts</h2>
-                  <Filter 
-                    value={filter} onChange={this.changeFilter}/>
-                  <ContactList  
-                    visibleFilter={visibleFilter}
-                    onDeleteContact={this.deleteContact}
-                    />
-              </Container>
-
-  );
-};
+  function contactCheck(value) {
+    return contacts.find(
+      contact => contact.name.toLowerCase() === value.toLowerCase()
+    );
+  }
+        return (
+          <Container>
+            <Phonebook onSubmit={addContact} />
+            <h2>Contacts</h2>
+            <Filter onChange={setFilter} />
+            <ContactList
+              visibleFilter={filteredContacts()}
+              onDeleteContact={deleteContact}
+            />
+            <Toaster
+              toastOptions={{
+                success: {
+                  style: {
+                    background: 'green',
+                    color: 'white',
+                  },
+                },
+                error: {
+                  style: {
+                    background: 'red',
+                    color: 'white',
+                  },
+                },
+              }}
+            />
+          </Container>
+        );
 }
-
-
-
 
 /////////////////////////////// STYLE /////////////////////////
 
@@ -101,5 +86,4 @@ const Container = styled.div`
   padding: 50px;
   border: 1px solid;
   width: 400px;
-`
-
+`;
