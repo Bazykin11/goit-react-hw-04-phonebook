@@ -19,7 +19,7 @@ export const App = () => {
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    if (contacts === []) {
+    if (contacts.length === 0) {
       return;
     }
     localStorage.setItem('contacts', JSON.stringify(contacts));
@@ -55,7 +55,7 @@ export const App = () => {
           <Container>
             <Phonebook onSubmit={addContact} />
             <h2>Contacts</h2>
-            <Filter onChange={setFilter} />
+            <Filter onChange={setFilter} value={filter} />
             <ContactList
               visibleFilter={filteredContacts()}
               onDeleteContact={deleteContact}

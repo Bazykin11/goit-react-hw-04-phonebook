@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 
-export const Filter = ({ onChange }) => {
+export const Filter = ({ onChange, value }) => {
   const filter = e => {
     const contactName = e.target.value.toLowerCase();
     onChange(contactName);
@@ -11,7 +11,13 @@ export const Filter = ({ onChange }) => {
   return (
     <Label>
       Find contacts by name
-      <Input type="text" onChange={filter} />
+      <Input
+        type="text"
+        onChange={filter}
+        name="filter"
+        id="filter"
+        value={value}
+      />
     </Label>
   );
 }
